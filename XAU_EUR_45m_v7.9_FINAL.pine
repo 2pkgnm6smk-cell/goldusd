@@ -1,0 +1,23 @@
+// TradingView strategy script for XAU/EUR trading
+
+//@version=4
+strategy("XAU/EUR Trading Strategy", overlay=true)
+
+// Input parameters
+length = input(14, title="Length")
+
+// Calculate moving average
+ma = sma(close, length)
+
+// Entry conditions
+longCondition = crossover(close, ma)
+if (longCondition)
+    strategy.entry("Long", strategy.long)
+
+// Exit conditions
+shortCondition = crossunder(close, ma)
+if (shortCondition)
+    strategy.close("Long")
+
+// Plotting the moving average
+plot(ma, color=color.blue, title="SMA")
