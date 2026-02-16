@@ -1,23 +1,33 @@
-// TradingView strategy script for XAU/EUR trading
+// TradingView Strategy Code
 
-//@version=4
-strategy("XAU/EUR Trading Strategy", overlay=true)
+//@version=5
+strategy("Optimized Strategy", overlay=true)
 
-// Input parameters
-length = input(14, title="Length")
+// Indicator settings
+ema_length = input(9, title="EMA Length")
+ema = ta.ema(close, ema_length)
 
-// Calculate moving average
-ma = sma(close, length)
-
-// Entry conditions
-longCondition = crossover(close, ma)
-if (longCondition)
+// Entry logic
+long_condition = ta.crossover(close, ema)
+if (long_condition)
     strategy.entry("Long", strategy.long)
 
-// Exit conditions
-shortCondition = crossunder(close, ma)
-if (shortCondition)
+short_condition = ta.crossunder(close, ema)
+if (short_condition)
+    strategy.entry("Short", strategy.short)
+
+// Exit logic
+long_exit_condition = ta.crossunder(close, ema)
+if (long_exit_condition)
     strategy.close("Long")
 
-// Plotting the moving average
-plot(ma, color=color.blue, title="SMA")
+short_exit_condition = ta.crossover(close, ema)
+if (short_exit_condition)
+    strategy.close("Short")
+
+// Performance optimizations
+strategy.exit("Take Profit", from_entry="Long", limit=close * 1.01)
+strategy.exit("Stop Loss", from_entry="Long", stop=close * 0.99)
+
+// Plotting
+ta.plot(ema, title="EMA", color=color.blue)
